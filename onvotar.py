@@ -27,15 +27,37 @@ DATA_DISCLAIMER = (
 )
 
 
+class OnVotarError(ValueError):
+    def __init__(self):
+        self.args = [self.text]
+
+
+class No3DataError(OnVotarError):
+    text = DEFAULT_ERR
+
+
+class NifFormatError(OnVotarError):
+    text = 'Revisa el format del DNI'
+
+
+class NifLetterError(OnVotarError):
+    text = 'La lletra del DNI no coincideix'
+
+
+class DateFormatError(OnVotarError):
+    text = 'Revisa el format de la data de naixement'
+
+
+class CpFormatError(OnVotarError):
+    text = 'Revisa el format del codi postal'
+
+
 def answer(text):
     try:
         dni, date, cp = _check_input_data(text)
-    except ValueError as e:
+    except OnVotarError as e:
         res = str(e)
-        if res == DEFAULT_ERR:
-            logger.info('Error: No hi ha 3 dades')
-        else:
-            logger.info('Error: %s', res)
+        logger.info('%s', e.__class__.__name__)
     else:
         result = calculate(dni, date, cp)
         if result:
@@ -55,34 +77,33 @@ def answer(text):
                 'Revisa-les, si us plau.'
             )
             logger.info('Bon format pero dades incorrectes')
-    logger.info('---')
     return res
 
 
 def _check_input_data(text):
     splitted = text.split(' ')
     if len(splitted) != 3:
-        raise ValueError(DEFAULT_ERR)
+        raise No3DataError()
 
     raw_dni, raw_date, cp = splitted
 
     dni = raw_dni.upper().replace('-', '')
     match = _DNI_PATTERN.match(dni)
     if not match:
-        raise ValueError('Revisa el format del DNI')
+        raise NifFormatError()
 
     if not _is_dni_letter_correct(dni):
-        raise ValueError('La lletra del DNI no coincideix')
+        raise NifLetterError()
 
     date = raw_date.upper().replace('/', '')
     match = _DOB_PATTERN.match(date)
     if not match:
-        raise ValueError('Revisa el format de la data de naixement')
+        raise DateFormatError()
     date = date[-4:]+date[2:4]+date[:2]
 
     match = _ZIP_PATTERN.match(cp)
     if not match:
-        raise ValueError('Revisa el format del codi postal')
+        raise CpFormatError()
 
     return dni, date, cp
 
@@ -96,4 +117,8 @@ def _is_dni_letter_correct(dni):
 
 
 if __name__ == '__main__':
-    print(answer(' '.join(sys.argv[1:])))
+    from log_helper import config_logging
+    config_logging()
+    res = answer(' '.join(sys.argv[1:]))
+    print()
+    print(res)
