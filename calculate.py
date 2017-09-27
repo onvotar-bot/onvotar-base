@@ -31,8 +31,8 @@ def _bucle_hash(key, iterations):
 
 
 def calculate(dni, birth, postal_code):
-    dni = dni[-6:].upper().replace(' ', '').replace('-', '')
-    birth = birth.upper().replace(' ', '').replace('/', '')
+    dni = dni[-6:].upper().replace('-', '')
+    birth = birth.upper().replace('/', '')
     postal_code = postal_code.upper()
 
     if len(dni) != 6:
