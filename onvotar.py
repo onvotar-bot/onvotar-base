@@ -6,6 +6,7 @@ from calculate import calculate
 
 logger = logging.getLogger('on_votar')
 
+_DNI_LETTERS = 'TRWAGMYFPDXBNJZSQVHLCKEO'
 _DNI_PATTERN = re.compile('^([0-9]{8}[^A-Z]?[A-Z])$')
 _DOB_PATTERN = re.compile('^([0-9]{8})$')
 _ZIP_PATTERN = re.compile('^([0-9]{5})$')
@@ -70,6 +71,9 @@ def _check_input_data(text):
     if not match:
         raise ValueError('Revisa el format del DNI')
 
+    if not _is_dni_letter_correct(dni):
+        raise ValueError('La lletra del DNI no coincideix')
+
     date = raw_date.upper().replace('/', '')
     match = _DOB_PATTERN.match(date)
     if not match:
@@ -81,6 +85,14 @@ def _check_input_data(text):
         raise ValueError('Revisa el format del codi postal')
 
     return dni, date, cp
+
+
+def _is_dni_letter_correct(dni):
+    dni_num = int(dni[:-1])
+    letter_num = int(dni_num/23)
+    letter_num *= 23
+    letter_num = dni_num-letter_num
+    return _DNI_LETTERS[letter_num] == dni[-1]
 
 
 if __name__ == '__main__':
