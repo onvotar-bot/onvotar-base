@@ -68,15 +68,19 @@ def answer(text):
                 'Mesa: {}'
             ).format(*result)
             logger.info(
-                'Punt de votacio retornat correctament. %s %s',
+                'OK - %s %s',
                 date[:4], cp
             )
         else:
             res = (
-                'Alguna de les dades entrades no és correcta.\n'
-                'Revisa-les, si us plau.'
+                'Les dades introduides no han retornat cap resultat.\n\n'
+                'Si has canviat recentment de domicili, prova el'
+                'codi postal anterior.\n'
+                'Si tens més dubtes, contacta amb el correu electrònic'
+                'oficial de la Generalitat:\n'
+                'onvotar@garantiesreferendum.net'
             )
-            logger.info('Bon format pero dades incorrectes')
+            logger.info('DADES_INCORRECTES')
     return res
 
 
