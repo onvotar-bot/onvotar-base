@@ -1,6 +1,8 @@
 import sys
-import subprocess
 import hashlib
+
+from Crypto.Cipher import AES
+
 
 DIRSHA = 2
 FILESHA = 2
@@ -9,12 +11,18 @@ BUCLE = 1714
 
 
 def _decrypt(text, password):
-    p = subprocess.Popen(
-        ['nodejs', 'decrypt.js', text.replace('\n', ''), password],
-        stdout=subprocess.PIPE
-    )
-    stdoutdata, stderrdata = p.communicate()
-    return stdoutdata.decode('utf8')
+    key, iv = _evp_bytes_to_key(password, '', 32, 16)
+    decipher = AES.new(key, AES.MODE_CBC, iv)
+    return decipher.decrypt(bytes.fromhex(text.strip())).decode('utf8')
+
+
+def _evp_bytes_to_key(password, salt, key_len, iv_len):
+    dtot = hashlib.md5((password + salt).encode()).digest()
+    d = [dtot]
+    while len(dtot) < (iv_len + key_len):
+        d.append(hashlib.md5(d[-1] + (password + salt).encode()).digest())
+        dtot = dtot + d[-1]
+    return dtot[:key_len], dtot[key_len:key_len+iv_len]
 
 
 def _hash(text):

@@ -74,9 +74,9 @@ def answer(text):
         else:
             res = (
                 'Les dades introduides no han retornat cap resultat.\n\n'
-                'Si has canviat recentment de domicili, prova el'
+                'Si has canviat recentment de domicili, prova el '
                 'codi postal anterior.\n'
-                'Si tens més dubtes, contacta amb el correu electrònic'
+                'Si tens més dubtes, contacta amb el correu electrònic '
                 'oficial de la Generalitat:\n'
                 'onvotar@garantiesreferendum.net'
             )
@@ -114,9 +114,7 @@ def _check_input_data(text):
 
 def _is_dni_letter_correct(dni):
     dni_num = int(dni[:-1])
-    letter_num = int(dni_num/23)
-    letter_num *= 23
-    letter_num = dni_num-letter_num
+    letter_num = dni_num % 23
     return _DNI_LETTERS[letter_num] == dni[-1]
 
 
