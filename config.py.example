@@ -1,0 +1,4 @@
+CONFIG = {
+    'FACEBOOK_TOKEN': 'FB_TOKEN',
+    'VERIFY_TOKEN': 'FB_VERiFY'
+}
