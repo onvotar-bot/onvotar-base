@@ -17,12 +17,12 @@ def _decrypt(text, password):
 
 
 def _evp_bytes_to_key(password, salt, key_len, iv_len):
-    dtot = hashlib.md5((password + salt).encode()).digest()
-    d = [dtot]
-    while len(dtot) < (iv_len + key_len):
-        d.append(hashlib.md5(d[-1] + (password + salt).encode()).digest())
-        dtot = dtot + d[-1]
-    return dtot[:key_len], dtot[key_len:key_len+iv_len]
+    final_d = hashlib.md5((password + salt).encode()).digest()
+    preview_d = final_d
+    while len(final_d) < (key_len + iv_len):
+        preview_d = hashlib.md5(preview_d + (password + salt).encode()).digest()
+        final_d = final_d + preview_d
+    return final_d[:key_len], final_d[key_len:(key_len + iv_len)]
 
 
 def _hash(text):
